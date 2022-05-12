@@ -7,12 +7,30 @@ string ltrim(const string &);
 string rtrim(const string &);
 vector<string> split(const string &);
 
-void plusMinus(vector<int> arr){
+void plusMinus(vector<int> &arr){
+    auto positive_lambda = [](double x){
+        return x > 0;
+    };
 
+    auto negative_lambda = [](double x) {
+        return x < 0;
+    };
+
+    auto null_lambda = [](double x) {
+        return x == 0;
+    };
+
+    int len = arr.size();
+    double positive_result = std::count_if(arr.cbegin(), arr.cend(), positive_lambda);
+    double negative_result = std::count_if(arr.cbegin(), arr.cend(), negative_lambda);
+    double null_result     = std::count_if(arr.cbegin(), arr.cend(), null_lambda);
+
+    cout << positive_result/len << endl;
+    cout << negative_result/len << endl;
+    cout << null_result/len << endl;
 }
 
 int main(){
-    cout << "Plus Minus";
     string n_temp;
     getline(cin, n_temp);
     
@@ -21,12 +39,13 @@ int main(){
     string arr_temp_temp;
     getline(cin, arr_temp_temp);
 
-    vector<string> arr_temp = split(rtrim(arr_temp_temp));
+    vector<string> arr_temp = split(ltrim(rtrim(arr_temp_temp)));
 
     vector<int> arr(n);
     
     for (int i = 0; i < n; i++){
         int arr_item = stoi(arr_temp[i]);
+        arr[i]=arr_item;
     }
 
     plusMinus(arr);
@@ -37,10 +56,10 @@ int main(){
 
 string ltrim(const string &str){
    string s(str);
+    auto find_iter = find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace)));
 
    s.erase(
-       s.begin(),
-       find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace)))
+       s.begin(), find_iter
     );
 
     return s;
@@ -53,6 +72,7 @@ string rtrim(const string &str){
          find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(),
          s.end()
      );
+     return s;
 }
 
 vector<string> split(const string &str){
@@ -62,6 +82,7 @@ vector<string> split(const string &str){
      string::size_type end = 0;
 
      while((end = str.find(" ", start)) != string::npos){
+         tokens.push_back(str.substr(start, end - start));
          start = end + 1;
      }
 
